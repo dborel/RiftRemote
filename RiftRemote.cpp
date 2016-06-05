@@ -9,8 +9,10 @@ ovrControllerType g_controllerType = ovrControllerType_Remote;
 
 void Initialize()
 {
-    ovr_Initialize();
-    ovr_Create(&g_session, nullptr);
+    ovr_Initialize(nullptr);
+
+	ovrGraphicsLuid luid;
+    ovr_Create(&g_session, &luid);
 }
 
 void Shutdown()
@@ -21,7 +23,7 @@ void Shutdown()
 
 void PressWindowsButton(int vk, bool value)
 {
-    static auto s_pressedKeys = new std::set<int>();
+    static std::set<int> s_pressedKeys;
 
     if (value == (s_pressedKeys.count(vk) > 0))
         return;
@@ -49,12 +51,12 @@ void PressWindowsButton(int vk, bool value)
 
 void SendKeysForInputState(const ovrInputState& state)
 {
-    PressWindowsButton(VK_BROWSER_FORWARD, state.Buttons & ovrButton_Up);
-    PressWindowsButton(VK_BROWSER_BACK, state.Buttons & ovrButton_Down);
-    PressWindowsButton(VK_MEDIA_PREV_TRACK, state.Buttons & ovrButton_Left);
-    PressWindowsButton(VK_MEDIA_NEXT_TRACK, state.Buttons & ovrButton_Right);
-    PressWindowsButton(VK_MEDIA_PLAY_PAUSE, state.Buttons & ovrButton_Enter);
-    PressWindowsButton(VK_MEDIA_STOP, state.Buttons & ovrButton_Back);
+    PressWindowsButton(VK_BROWSER_FORWARD, (state.Buttons & ovrButton_Up) != 0);
+    PressWindowsButton(VK_BROWSER_BACK, (state.Buttons & ovrButton_Down) != 0);
+    PressWindowsButton(VK_MEDIA_PREV_TRACK, (state.Buttons & ovrButton_Left) != 0);
+    PressWindowsButton(VK_MEDIA_NEXT_TRACK, (state.Buttons & ovrButton_Right) != 0);
+    PressWindowsButton(VK_MEDIA_PLAY_PAUSE, (state.Buttons & ovrButton_Enter) != 0);
+    PressWindowsButton(VK_MEDIA_STOP, (state.Buttons & ovrButton_Back) != 0);
 }
 
 int main()
@@ -70,8 +72,8 @@ int main()
         ovrInputState inputState;
         memset(&inputState, 0, sizeof(ovrInputState));
 
-        ovr_GetInputState(g_session, g_controllerType, &state);
+        ovr_GetInputState(g_session, g_controllerType, &inputState);
 
-        SendKeysForInputState(state);
+        SendKeysForInputState(inputState);
     }
 }

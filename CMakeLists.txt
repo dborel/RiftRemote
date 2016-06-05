@@ -5,8 +5,10 @@ project (RiftRemote CXX)
 
 set (LIBOVR_DIR 3rdParty/LibOVR/1.4.0)
 
-include_directories ($LIBOVR_DIR/Include)
+include_directories (${LIBOVR_DIR}/Include)
 
-add_library (RiftRemote SHARED RiftRemote.cpp ${LIBOVR_DIR}/Src/OVR_CAPIShim.c)
+set (SHIM_FILE ${LIBOVR_DIR}/Src/OVR_CAPIShim.c)
+add_executable (RiftRemote RiftRemote.cpp ${SHIM_FILE})
+SET_SOURCE_FILES_PROPERTIES(${LIBOVR_DIR}/Src/OVR_CAPIShim.c PROPERTIES LANGUAGE CXX)
 
 target_link_libraries (RiftRemote User32)
